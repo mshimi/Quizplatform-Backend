@@ -38,6 +38,7 @@ public class Quiz {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
+    @OrderBy("questionOrder ASC") // This ensures the list is always fetched in the correct order
     @Builder.Default
     private Set<QuizItem> quizItems = new HashSet<>();
 

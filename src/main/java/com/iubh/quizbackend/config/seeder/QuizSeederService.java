@@ -39,7 +39,7 @@ public class QuizSeederService {
                         .answeredAt(LocalDateTime.now().minusDays(1).plusMinutes(5)).build();
                 Answer selectedAnswer = question.getAnswers().stream().findFirst().orElse(null);
                 if (selectedAnswer != null) {
-                    item.setSelectedAnswers(Set.of(selectedAnswer));
+                    item.setSelectedAnswer(selectedAnswer);
                     item.setIsCorrect(selectedAnswer.getIsCorrect());
                 }
                 completedQuiz.addQuizItem(item);

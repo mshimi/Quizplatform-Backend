@@ -16,6 +16,8 @@ import java.util.*;
 @AllArgsConstructor // Add all-args constructor
 @Entity
 @Table(name = "users")
+@EqualsAndHashCode(exclude = {"followedModules", "quizzes","role"})
+@ToString(exclude = {"followedModules", "quizzes","role"})
 public class User implements UserDetails { // Implement UserDetails directly
 
     @Id

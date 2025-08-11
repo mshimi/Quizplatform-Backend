@@ -10,6 +10,7 @@ import com.iubh.quizbackend.service.AuthenticationService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthenticationController {
 
     private final AuthenticationService service;
@@ -40,6 +42,8 @@ public class AuthenticationController {
             @RequestBody AuthenticationRequest request,
             HttpServletResponse response // Inject response to set the cookie
     ) {
+        log.debug("Authenticating request");
+        log.debug("Request: {}", request);
         AuthenticationResponse authResponse = service.authenticate(request);
         setRefreshTokenCookie(response, authResponse.getRefreshToken());
 

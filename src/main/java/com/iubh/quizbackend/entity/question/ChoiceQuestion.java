@@ -107,18 +107,25 @@ public class ChoiceQuestion {
     @AllArgsConstructor
     public static class ChangeRequestCounts {
 
+        @Column(name = "total")
         @Formula("(select count(qcr.id) from question_change_requests qcr where qcr.question_id = id)")
         private int total;
 
+        // --- THE FIX IS APPLIED BELOW ---
+        // We explicitly map the Java field to a snake_case column name for the formula.
+        @Column(name = "question_text_change")
         @Formula("(select count(qcr.id) from question_change_requests qcr where qcr.question_id = id and qcr.request_type = 'INCORRECT_QUESTION_TEXT')")
         private int questionTextChange;
 
+        @Column(name = "answer_change")
         @Formula("(select count(qcr.id) from question_change_requests qcr where qcr.question_id = id and qcr.request_type = 'INCORRECT_ANSWER')")
         private int answerChange;
 
+        @Column(name = "duplication_change")
         @Formula("(select count(qcr.id) from question_change_requests qcr where qcr.question_id = id and qcr.request_type = 'DUPLICATE_QUESTION')")
         private int duplicationChange;
 
+        @Column(name = "deletion_request")
         @Formula("(select count(qcr.id) from question_change_requests qcr where qcr.question_id = id and qcr.request_type = 'SUGGEST_DELETION')")
         private int deletionRequest;
     }
