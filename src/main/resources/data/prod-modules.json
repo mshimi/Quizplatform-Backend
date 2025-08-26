@@ -1,0 +1,82 @@
+[
+  {
+    "title": "Grundlagen der Programmierung",
+    "description": "Einführung in prozedurale und objektorientierte Konzepte mit einer modernen Programmiersprache."
+  },
+  {
+    "title": "Algorithmen und Datenstrukturen",
+    "description": "Analyse von Algorithmen, Komplexitätstheorie und Implementierung gängiger Datenstrukturen wie Listen, Bäume und Graphen."
+  },
+  {
+    "title": "Datenbanken I",
+    "description": "Grundlagen relationaler Datenbanken, SQL, Datenmodellierung und Normalisierung."
+  },
+  {
+    "title": "Betriebssysteme und Rechnernetze",
+    "description": "Konzepte von Betriebssystemen, Prozessmanagement und Grundlagen der Netzwerkkommunikation und Protokolle."
+  },
+  {
+    "title": "Software Engineering",
+    "description": "Methoden und Techniken für den professionellen Softwareentwicklungsprozess, von der Anforderung bis zum Test."
+  },
+  {
+    "title": "Theoretische Informatik",
+    "description": "Formale Sprachen, Automatentheorie, Berechenbarkeit und Komplexitätstheorie."
+  },
+  {
+    "title": "Webtechnologien",
+    "description": "Entwicklung von Webanwendungen mit HTML, CSS, JavaScript und serverseitigen Frameworks."
+  },
+  {
+    "title": "IT-Sicherheit",
+    "description": "Grundlagen der Kryptographie, Netzwerksicherheit, Systemsicherheit und sichere Softwareentwicklung."
+  },
+  {
+    "title": "Künstliche Intelligenz",
+    "description": "Einführung in die Grundlagen von KI, maschinellem Lernen, Wissensrepräsentation und Suchalgorithmen."
+  },
+  {
+    "title": "Compilerbau",
+    "description": "Phasen eines Compilers von der lexikalischen Analyse über das Parsen bis zur Code-Generierung."
+  },
+  {
+    "title": "Verteilte Systeme",
+    "description": "Architekturen und Konzepte für Systeme, die über mehrere Rechner verteilt sind, inklusive Konsistenz und Fehlertoleranz."
+  },
+  {
+    "title": "Computergrafik",
+    "description": "Grundlagen der 2D- und 3D-Grafik, Rendering-Pipelines, Modellierung und Animation."
+  },
+  {
+    "title": "Mensch-Maschine-Interaktion",
+    "description": "Gestaltung und Bewertung von benutzerfreundlichen Schnittstellen und interaktiven Systemen."
+  },
+  {
+    "title": "Data Science Grundlagen",
+    "description": "Einführung in die Analyse großer Datenmengen, statistische Methoden und Werkzeuge für Data Mining."
+  },
+  {
+    "title": "Cloud Computing",
+    "description": "Konzepte von IaaS, PaaS und SaaS, Virtualisierung und Architekturen für die Cloud."
+  },
+  {
+    "title": "Mobile Computing",
+    "description": "Entwicklung von Anwendungen für mobile Endgeräte unter Berücksichtigung der plattformspezifischen Besonderheiten."
+  },
+  {
+    "title": "Robotik",
+    "description": "Grundlagen der Kinematik, Sensorik, Aktorik und Steuerung von autonomen Robotersystemen."
+  },
+  {
+    "title": "Bioinformatik",
+    "description": "Anwendung von Informatikmethoden zur Analyse von biologischen Daten, insbesondere Genom- und Proteindaten."
+  },
+  {
+    "title": "IT-Recht und Ethik",
+    "description": "Rechtliche und ethische Fragestellungen in der Informatik, inklusive Datenschutz, Urheberrecht und soziale Verantwortung."
+  },
+  {
+    "title": "Projektmanagement in der IT",
+    "description": "Methoden zur Planung, Durchführung und Steuerung von IT-Projekten, von klassischen bis zu agilen Ansätzen."
+  }
+]

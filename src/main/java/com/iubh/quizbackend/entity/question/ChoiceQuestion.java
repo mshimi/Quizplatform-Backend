@@ -18,7 +18,7 @@ import java.util.*;
 @Entity
 @Table(name = "choice_questions")
 @EqualsAndHashCode(of = "id")
-@ToString(exclude = {"module", "answers", "changeRequests"}) // Exclude all relationships
+@ToString(exclude = {"module", "answers", "changeRequests"})
 public class ChoiceQuestion {
 
     @Id
@@ -27,6 +27,8 @@ public class ChoiceQuestion {
 
     @Column(nullable = false, length = 1000)
     private String questionText;
+
+    private Boolean active = true;
 
 //    @Enumerated(EnumType.STRING)
 //    @Column(nullable = false)
@@ -50,19 +52,15 @@ public class ChoiceQuestion {
             orphanRemoval = true
     )
     @Builder.Default
-    @JsonManagedReference // This is correct to manage the "forward" part of the reference.
+    @JsonManagedReference
     private Set<Answer> answers = new HashSet<>();
 
     @Builder.Default
     @Embedded
     private ChangeRequestCounts changeRequestCounts = new ChangeRequestCounts();
 
-    /**
-     * --- IMPROVEMENT: Helper method for bidirectional relationship ---
-     * This is a best practice to ensure that both sides of the relationship are correctly synchronized.
-     *
-     * @param answer The answer to add to this question.
-     */
+
+
     public void addAnswer(Answer answer) {
         this.answers.add(answer);
         answer.setQuestion(this);
@@ -79,16 +77,10 @@ public class ChoiceQuestion {
     private Set<QuestionChangeRequest> changeRequests = new HashSet<>();
 
 
-    /**
-     * Derives the question type based on the number of correct answers.
-     * This is now pure logic and is not stored in the database.
-     *
-     * @return {@link ChoiceQuestionType#MULTI} if there is more than one correct answer,
-     * otherwise {@link ChoiceQuestionType#SINGLE}.
-     */
+
     public ChoiceQuestionType getQuestionType() {
         if (this.answers == null) {
-            return ChoiceQuestionType.SINGLE; // Default for safety
+            return ChoiceQuestionType.SINGLE;
         }
 
         long correctAnswersCount = this.answers.stream()
@@ -111,8 +103,7 @@ public class ChoiceQuestion {
         @Formula("(select count(qcr.id) from question_change_requests qcr where qcr.question_id = id)")
         private int total;
 
-        // --- THE FIX IS APPLIED BELOW ---
-        // We explicitly map the Java field to a snake_case column name for the formula.
+
         @Column(name = "question_text_change")
         @Formula("(select count(qcr.id) from question_change_requests qcr where qcr.question_id = id and qcr.request_type = 'INCORRECT_QUESTION_TEXT')")
         private int questionTextChange;
