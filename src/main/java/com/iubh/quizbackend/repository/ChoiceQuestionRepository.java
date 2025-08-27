@@ -35,4 +35,6 @@ public interface ChoiceQuestionRepository extends JpaRepository<ChoiceQuestion, 
     List<ChoiceQuestion> findRandomQuestionsByModule(@Param("moduleId") UUID moduleId, @Param("limit") int limit);
 
 
+    Page<ChoiceQuestion> findByModule_IdAndQuestionTextContainingIgnoreCase(UUID moduleId, String searchText, Pageable pageable);
+
 }

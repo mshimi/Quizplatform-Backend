@@ -29,7 +29,7 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final ModuleSeederService moduleSeederService;
     private final QuestionSeederService questionSeederService;
     private final QuizSeederService quizSeederService;
-    private final ChangeRequestSeederService changeRequestSeederService;
+  //  private final ChangeRequestSeederService changeRequestSeederService;
 
     @Override
     @Transactional
@@ -62,7 +62,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         log.info("Successfully seeded quiz attempts for the first user.");
 
         // 6. Seed Change Requests from other users
-        changeRequestSeederService.seedChangeRequests(users, modules);
+       // changeRequestSeederService.seedChangeRequests(users, modules);
         log.info("Successfully seeded change requests.");
 
         log.info("Database seeding process complete.");

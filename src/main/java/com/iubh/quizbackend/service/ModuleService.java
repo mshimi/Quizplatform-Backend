@@ -142,11 +142,11 @@ public class ModuleService {
             log.info(dto.getAnswers().size() + " Dto :  answers found");
             dto.setChangeRequestCounts(
                     ChangeRequestCountsDto.builder()
-                            .total(e.getChangeRequestCounts().getTotal())
-                            .answerChange(e.getChangeRequestCounts().getAnswerChange())
-                            .questionTextChange(e.getChangeRequestCounts().getQuestionTextChange())
-                            .duplicationChange(e.getChangeRequestCounts().getDuplicationChange())
-                            .deletionRequest(e.getChangeRequestCounts().getDeletionRequest())
+                            .total(e.getTotalChangeRequests())
+                            .answerChange(e.getAnswerChangeRequests())
+                            .questionTextChange(e.getQuestionTextChangeRequests())
+                            .duplicationChange(e.getDuplicationChangeRequests())
+                            .deletionRequest(e.getDeletionRequests())
                             .build()
             );
             return dto;

@@ -14,6 +14,13 @@ public interface ChoiceQuestionMapper {
 
     ChoiceQuestionMapper INSTANCE = Mappers.getMapper(ChoiceQuestionMapper.class);
 
-   // @Mapping(source = "module.id", target = "moduleId")
+    // --- UPDATED MAPPINGS ---
+    // These mappings take the flat @Formula fields from the entity
+    // and map them to the nested DTO object.
+    @Mapping(source = "totalChangeRequests", target = "changeRequestCounts.total")
+    @Mapping(source = "questionTextChangeRequests", target = "changeRequestCounts.questionTextChange")
+    @Mapping(source = "answerChangeRequests", target = "changeRequestCounts.answerChange")
+    @Mapping(source = "duplicationChangeRequests", target = "changeRequestCounts.duplicationChange")
+    @Mapping(source = "deletionRequests", target = "changeRequestCounts.deletionRequest")
     ChoiceQuestionDto toDto(ChoiceQuestion choiceQuestion);
 }

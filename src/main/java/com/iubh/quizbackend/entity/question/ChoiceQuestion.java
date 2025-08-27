@@ -55,9 +55,9 @@ public class ChoiceQuestion {
     @JsonManagedReference
     private Set<Answer> answers = new HashSet<>();
 
-    @Builder.Default
-    @Embedded
-    private ChangeRequestCounts changeRequestCounts = new ChangeRequestCounts();
+//    @Builder.Default
+//    @Embedded
+//    private ChangeRequestCounts changeRequestCounts = new ChangeRequestCounts();
 
 
 
@@ -90,35 +90,50 @@ public class ChoiceQuestion {
         return correctAnswersCount > 1 ? ChoiceQuestionType.MULTI : ChoiceQuestionType.SINGLE;
     }
 
+    @Formula("(select count(qcr.id) from question_change_requests qcr where qcr.question_id = id)")
+    private int totalChangeRequests;
 
-    @Embeddable
-    @Getter
-    @Setter
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class ChangeRequestCounts {
+    @Formula("(select count(qcr.id) from question_change_requests qcr where qcr.question_id = id and qcr.request_type = 'INCORRECT_QUESTION_TEXT')")
+    private int questionTextChangeRequests;
 
-        @Column(name = "total")
-        @Formula("(select count(qcr.id) from question_change_requests qcr where qcr.question_id = id)")
-        private int total;
+    @Formula("(select count(qcr.id) from question_change_requests qcr where qcr.question_id = id and qcr.request_type = 'INCORRECT_ANSWER')")
+    private int answerChangeRequests;
 
+    @Formula("(select count(qcr.id) from question_change_requests qcr where qcr.question_id = id and qcr.request_type = 'DUPLICATE_QUESTION')")
+    private int duplicationChangeRequests;
 
-        @Column(name = "question_text_change")
-        @Formula("(select count(qcr.id) from question_change_requests qcr where qcr.question_id = id and qcr.request_type = 'INCORRECT_QUESTION_TEXT')")
-        private int questionTextChange;
+    @Formula("(select count(qcr.id) from question_change_requests qcr where qcr.question_id = id and qcr.request_type = 'SUGGEST_DELETION')")
+    private int deletionRequests;
 
-        @Column(name = "answer_change")
-        @Formula("(select count(qcr.id) from question_change_requests qcr where qcr.question_id = id and qcr.request_type = 'INCORRECT_ANSWER')")
-        private int answerChange;
-
-        @Column(name = "duplication_change")
-        @Formula("(select count(qcr.id) from question_change_requests qcr where qcr.question_id = id and qcr.request_type = 'DUPLICATE_QUESTION')")
-        private int duplicationChange;
-
-        @Column(name = "deletion_request")
-        @Formula("(select count(qcr.id) from question_change_requests qcr where qcr.question_id = id and qcr.request_type = 'SUGGEST_DELETION')")
-        private int deletionRequest;
-    }
+//
+//    @Embeddable
+//    @Getter
+//    @Setter
+//    @Builder
+//    @NoArgsConstructor
+//    @AllArgsConstructor
+//    public static class ChangeRequestCounts {
+//
+//        @Column(name = "total")
+//        @Formula("(select count(qcr.id) from question_change_requests qcr where qcr.question_id = id)")
+//        private int total;
+//
+//
+//        @Column(name = "question_text_change")
+//        @Formula("(select count(qcr.id) from question_change_requests qcr where qcr.question_id = id and qcr.request_type = 'INCORRECT_QUESTION_TEXT')")
+//        private int questionTextChange;
+//
+//        @Column(name = "answer_change")
+//        @Formula("(select count(qcr.id) from question_change_requests qcr where qcr.question_id = id and qcr.request_type = 'INCORRECT_ANSWER')")
+//        private int answerChange;
+//
+//        @Column(name = "duplication_change")
+//        @Formula("(select count(qcr.id) from question_change_requests qcr where qcr.question_id = id and qcr.request_type = 'DUPLICATE_QUESTION')")
+//        private int duplicationChange;
+//
+//        @Column(name = "deletion_request")
+//        @Formula("(select count(qcr.id) from question_change_requests qcr where qcr.question_id = id and qcr.request_type = 'SUGGEST_DELETION')")
+//        private int deletionRequest;
+//    }
 
 }

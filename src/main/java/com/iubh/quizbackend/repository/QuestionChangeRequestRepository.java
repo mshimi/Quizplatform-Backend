@@ -1,5 +1,6 @@
 package com.iubh.quizbackend.repository;
 
+import com.iubh.quizbackend.entity.change.ChangeRequestStatus;
 import com.iubh.quizbackend.entity.change.QuestionChangeRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +20,6 @@ public interface QuestionChangeRequestRepository extends JpaRepository<QuestionC
     Page<QuestionChangeRequest> findByQuestion_ModuleId(UUID moduleId, Pageable pageable);
 
 
-    Page<QuestionChangeRequest> findByQuestion_ModuleIdIn(List<UUID> moduleIds, Pageable pageable);
+    Page<QuestionChangeRequest> findByQuestion_ModuleIdInAndStatus(List<UUID> moduleIds, ChangeRequestStatus status, Pageable pageable);
 
 }
