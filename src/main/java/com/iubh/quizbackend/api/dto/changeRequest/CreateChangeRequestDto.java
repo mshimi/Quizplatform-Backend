@@ -1,6 +1,7 @@
 package com.iubh.quizbackend.api.dto.changeRequest;
 
 import com.iubh.quizbackend.api.dto.AnswerDto;
+import com.iubh.quizbackend.api.dto.AnswerRequestDto;
 import com.iubh.quizbackend.entity.change.ChangeRequestType;
 import lombok.Data;
 
@@ -12,6 +13,6 @@ public class CreateChangeRequestDto {
     private ChangeRequestType type;
     private String justification;
     private String newQuestionText;
-    private List<AnswerDto> newAnswers;
+    private List<AnswerRequestDto> newAnswers;
     private UUID duplicateQuestionId;
 }

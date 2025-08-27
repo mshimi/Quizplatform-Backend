@@ -9,6 +9,7 @@ import com.iubh.quizbackend.entity.question.Answer;
 import com.iubh.quizbackend.entity.question.ChoiceQuestion;
 import com.iubh.quizbackend.entity.user.User;
 import com.iubh.quizbackend.mapper.ChoiceQuestionMapper;
+import com.iubh.quizbackend.mapper.ProposedAnswerMapper;
 import com.iubh.quizbackend.repository.ChoiceQuestionRepository;
 import com.iubh.quizbackend.repository.QuestionChangeRequestRepository;
 import com.iubh.quizbackend.repository.UserRepository;
@@ -35,6 +36,8 @@ public class QuestionChangeService {
     private final ChoiceQuestionRepository choiceQuestionRepository;
     private final UserRepository userRepository;
     private final ChoiceQuestionMapper choiceQuestionMapper;
+    private final ProposedAnswerMapper proposedAnswerMapper; // --- ADD THIS ---
+
     private static final int VOTE_THRESHOLD = 3;
 
     @Transactional(readOnly = true)
@@ -79,13 +82,12 @@ public class QuestionChangeService {
             dto = specificDto;
         } else if (entity instanceof IncorrectAnswerRequest r) {
             QuestionChangeRequestDto.IncorrectAnswerRequestDto specificDto = new QuestionChangeRequestDto.IncorrectAnswerRequestDto();
-            if (r.getTargetAnswer() != null) {
-                specificDto.setTargetAnswerId(r.getTargetAnswer().getId());
-                specificDto.setOldAnswerText(r.getTargetAnswer().getText());
-                specificDto.setOldAnswerIsCorrect(r.getTargetAnswer().getIsCorrect());
-            }
-            specificDto.setProposedText(r.getProposedText());
-            specificDto.setProposedIsCorrect(r.getProposedIsCorrect());
+            // Map the set of ProposedAnswer entities to a set of DTOs
+            specificDto.setProposedAnswers(
+                    r.getProposedAnswers().stream()
+                            .map(proposedAnswerMapper::toDto)
+                            .collect(Collectors.toSet())
+            );
             dto = specificDto;
         } else if (entity instanceof SuggestDeletionRequest) {
             dto = new QuestionChangeRequestDto.SuggestDeletionRequestDto();
@@ -136,32 +138,41 @@ public class QuestionChangeService {
         ChoiceQuestion question = choiceQuestionRepository.findById(questionId)
                 .orElseThrow(() -> new EntityNotFoundException("Question not found with id: " + questionId));
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        QuestionChangeRequest changeRequest;
+
+        // The switch now handles the full creation and saving for each type.
         switch (requestDto.getType()) {
             case INCORRECT_QUESTION_TEXT:
-                changeRequest = new IncorrectQuestionTextRequest();
-                ((IncorrectQuestionTextRequest) changeRequest).setProposedText(requestDto.getNewQuestionText());
+                IncorrectQuestionTextRequest textRequest = new IncorrectQuestionTextRequest();
+                textRequest.setProposedText(requestDto.getNewQuestionText());
+                setupAndSaveRequest(textRequest, question, currentUser, requestDto.getJustification());
                 break;
-            case INCORRECT_ANSWER:
-                changeRequest = new IncorrectAnswerRequest();
-                // Logic to handle incorrect answer suggestions
-                break;
-            case SUGGEST_DELETION:
-                changeRequest = new SuggestDeletionRequest();
-                break;
-            case DUPLICATE_QUESTION:
-                changeRequest = new DuplicateQuestionRequest();
-                ((DuplicateQuestionRequest) changeRequest).setDuplicateOfQuestionId(requestDto.getDuplicateQuestionId());
 
+            case INCORRECT_ANSWER:
+                IncorrectAnswerRequest answerRequest = new IncorrectAnswerRequest();
+                requestDto.getNewAnswers().forEach(answerDto -> {
+                    ProposedAnswer proposedAnswer = ProposedAnswer.builder()
+                            .text(answerDto.getText())
+                            .isCorrect(answerDto.isCorrect())
+                            .build();
+                    answerRequest.addProposedAnswer(proposedAnswer);
+                });
+                setupAndSaveRequest(answerRequest, question, currentUser, requestDto.getJustification());
                 break;
+
+            case SUGGEST_DELETION:
+                SuggestDeletionRequest deletionRequest = new SuggestDeletionRequest();
+                setupAndSaveRequest(deletionRequest, question, currentUser, requestDto.getJustification());
+                break;
+
+            case DUPLICATE_QUESTION:
+                DuplicateQuestionRequest duplicateRequest = new DuplicateQuestionRequest();
+                duplicateRequest.setDuplicateOfQuestionId(requestDto.getDuplicateQuestionId());
+                setupAndSaveRequest(duplicateRequest, question, currentUser, requestDto.getJustification());
+                break;
+
             default:
                 throw new IllegalArgumentException("Unsupported change request type: " + requestDto.getType());
         }
-        changeRequest.setQuestion(question);
-        changeRequest.setRequester(currentUser);
-        changeRequest.setJustification(requestDto.getJustification());
-        changeRequest.setStatus(ChangeRequestStatus.PENDING);
-        changeRequestRepository.save(changeRequest);
     }
 
     @Transactional
@@ -219,23 +230,32 @@ public class QuestionChangeService {
             newQuestion.setModule(originalQuestion.getModule());
             newQuestion.setQuestionText(originalQuestion.getQuestionText());
             newQuestion.setActive(true);
-            Set<Answer> newAnswers = originalQuestion.getAnswers().stream().map(originalAnswer -> {
-                Answer newAnswer = new Answer();
-                if (originalAnswer.equals(answerRequest.getTargetAnswer())) {
-                    newAnswer.setText(answerRequest.getProposedText());
-                    newAnswer.setIsCorrect(answerRequest.getProposedIsCorrect());
-                } else {
-                    newAnswer.setText(originalAnswer.getText());
-                    newAnswer.setIsCorrect(originalAnswer.getIsCorrect());
-                }
-                newAnswer.setQuestion(newQuestion);
-                return newAnswer;
-            }).collect(Collectors.toSet());
+
+            // Create new Answer entities from the ProposedAnswer entities
+            Set<Answer> newAnswers = answerRequest.getProposedAnswers().stream()
+                    .map(proposedAnswer -> {
+                        Answer newAnswer = new Answer();
+                        newAnswer.setText(proposedAnswer.getText());
+                        newAnswer.setIsCorrect(proposedAnswer.getIsCorrect());
+                        newAnswer.setQuestion(newQuestion); // Set back-reference
+                        return newAnswer;
+                    }).collect(Collectors.toSet());
+
             newQuestion.setAnswers(newAnswers);
             choiceQuestionRepository.save(newQuestion);
         }
         changeRequest.setStatus(ChangeRequestStatus.APPROVED);
         changeRequest.setResolvedAt(LocalDateTime.now());
         changeRequestRepository.save(changeRequest);
+    }
+
+
+
+    private void setupAndSaveRequest(QuestionChangeRequest request, ChoiceQuestion question, User user, String justification) {
+        request.setQuestion(question);
+        request.setRequester(user);
+        request.setJustification(justification);
+        request.setStatus(ChangeRequestStatus.PENDING);
+        changeRequestRepository.save(request);
     }
 }

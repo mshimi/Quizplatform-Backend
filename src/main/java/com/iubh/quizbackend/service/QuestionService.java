@@ -1,14 +1,18 @@
 package com.iubh.quizbackend.service;
 
 import com.iubh.quizbackend.api.dto.CreateQuestionRequestDto;
+import com.iubh.quizbackend.api.dto.question.QuestionSummaryDto;
 import com.iubh.quizbackend.entity.module.Module;
 import com.iubh.quizbackend.entity.question.Answer;
 import com.iubh.quizbackend.entity.question.ChoiceQuestion;
+import com.iubh.quizbackend.mapper.ChoiceQuestionMapper;
 import com.iubh.quizbackend.repository.ChoiceQuestionRepository;
 import com.iubh.quizbackend.repository.ModuleRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +25,8 @@ public class QuestionService {
 
     private final ChoiceQuestionRepository choiceQuestionRepository;
     private final ModuleRepository moduleRepository;
+    private final ChoiceQuestionMapper choiceQuestionMapper; // Add this
+
 
     /**
      * Creates a new ChoiceQuestion with its associated Answers and links it to a Module.
@@ -63,6 +69,15 @@ public class QuestionService {
 
 
 
-
+    @Transactional(readOnly = true)
+    public Page<QuestionSummaryDto> searchQuestions(UUID moduleId, String searchTerm, Pageable pageable) {
+        Page<ChoiceQuestion> questionsPage;
+        if (searchTerm == null || searchTerm.trim().isEmpty()) {
+            questionsPage = choiceQuestionRepository.findByModule_IdAndActiveTrue(moduleId, pageable);
+        } else {
+            questionsPage = choiceQuestionRepository.findByModule_IdAndQuestionTextContainingIgnoreCaseAndActiveTrue(moduleId, searchTerm, pageable);
+        }
+        return questionsPage.map(choiceQuestionMapper::toSummaryDto);
+    }
 
 }

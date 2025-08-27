@@ -16,7 +16,8 @@ public class NotificationDto<T> {
 
     public enum NotificationType {
         QUIZ_INVITATION,
-        CHAT_MESSAGE
+        CHAT_MESSAGE,
+        LOBBY_UPDATE
         // You can add more types later
         // FRIEND_REQUEST,
         // SYSTEM_ALERT

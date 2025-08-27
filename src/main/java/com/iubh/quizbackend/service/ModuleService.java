@@ -1,9 +1,6 @@
 package com.iubh.quizbackend.service;
 
-import com.iubh.quizbackend.api.dto.ChangeRequestCountsDto;
-import com.iubh.quizbackend.api.dto.ChoiceQuestionDto;
-import com.iubh.quizbackend.api.dto.ModuleDetailDto;
-import com.iubh.quizbackend.api.dto.ModuleListItemDto;
+import com.iubh.quizbackend.api.dto.*;
 import com.iubh.quizbackend.entity.module.Module;
 import com.iubh.quizbackend.entity.question.ChoiceQuestion;
 import com.iubh.quizbackend.entity.user.User;
@@ -23,6 +20,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -132,7 +130,7 @@ public class ModuleService {
                 .orElseThrow(() -> new EntityNotFoundException("Module not found with id: " + moduleId));
 
         // 2. Fetch the paginated list of questions for this module
-        Page<ChoiceQuestion> questionsPage = choiceQuestionRepository.findByModule_Id(moduleId, pageable);
+        Page<ChoiceQuestion> questionsPage = choiceQuestionRepository.findByModule_IdAndActiveTrue(moduleId, pageable);
 
         // 3. Map the page of question entities to a page of DTOs
         Page<ChoiceQuestionDto> questionsDtoPage = questionsPage.map(e -> {
@@ -179,4 +177,13 @@ public class ModuleService {
                 .map(Module::getId)
                 .collect(Collectors.toSet());
     }
+
+
+    @Transactional(readOnly = true)
+    public List<ModuleSummaryDto> getAllModulesAsSummary() {
+        return moduleRepository.findAll().stream()
+                .map(moduleMapper::toSummaryDto)
+                .collect(Collectors.toList());
+    }
+
 }

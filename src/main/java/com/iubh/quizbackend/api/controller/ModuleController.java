@@ -2,6 +2,7 @@ package com.iubh.quizbackend.api.controller;
 
 import com.iubh.quizbackend.api.dto.ModuleDetailDto;
 import com.iubh.quizbackend.api.dto.ModuleListItemDto;
+import com.iubh.quizbackend.api.dto.ModuleSummaryDto;
 import com.iubh.quizbackend.entity.user.User;
 import com.iubh.quizbackend.service.ModuleService;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -80,5 +82,12 @@ public class ModuleController {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         ModuleDetailDto moduleDetails = moduleService.getModuleDetailsById(moduleId, currentUser, pageable);
         return ResponseEntity.ok(moduleDetails);
+    }
+
+
+    @GetMapping("/summary")
+    public ResponseEntity<List<ModuleSummaryDto>> getAllModuleSummaries() {
+        List<ModuleSummaryDto> modules = moduleService.getAllModulesAsSummary();
+        return ResponseEntity.ok(modules);
     }
 }

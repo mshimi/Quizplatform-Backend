@@ -10,6 +10,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -59,11 +60,15 @@ public abstract class QuestionChangeRequestDto {
     @NoArgsConstructor
     @EqualsAndHashCode(callSuper = true)
     public static class IncorrectAnswerRequestDto extends QuestionChangeRequestDto {
-        private UUID targetAnswerId;
-        private String oldAnswerText;
-        private Boolean oldAnswerIsCorrect;
-        private String proposedText;
-        private Boolean proposedIsCorrect;
+        // --- REMOVED FIELDS ---
+        // private UUID targetAnswerId;
+        // private String oldAnswerText;
+        // private Boolean oldAnswerIsCorrect;
+        // private String proposedText;
+        // private Boolean proposedIsCorrect;
+
+        // --- NEW FIELD ---
+        private Set<ProposedAnswerDto> proposedAnswers;
     }
 
     @Data

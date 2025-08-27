@@ -1,6 +1,7 @@
 package com.iubh.quizbackend.mapper;
 
 import com.iubh.quizbackend.api.dto.ChoiceQuestionDto;
+import com.iubh.quizbackend.api.dto.question.QuestionSummaryDto;
 import com.iubh.quizbackend.entity.question.ChoiceQuestion;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -23,4 +24,8 @@ public interface ChoiceQuestionMapper {
     @Mapping(source = "duplicationChangeRequests", target = "changeRequestCounts.duplicationChange")
     @Mapping(source = "deletionRequests", target = "changeRequestCounts.deletionRequest")
     ChoiceQuestionDto toDto(ChoiceQuestion choiceQuestion);
+
+
+    QuestionSummaryDto toSummaryDto(ChoiceQuestion choiceQuestion);
+
 }

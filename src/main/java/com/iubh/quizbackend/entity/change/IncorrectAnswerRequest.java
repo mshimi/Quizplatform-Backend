@@ -4,9 +4,15 @@ import com.iubh.quizbackend.entity.question.Answer;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 /**
  * A change request suggesting a correction to one of the question's answers.
  */
+@Builder
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
@@ -15,15 +21,17 @@ import lombok.*;
 @DiscriminatorValue("INCORRECT_ANSWER")
 public class IncorrectAnswerRequest extends QuestionChangeRequest {
 
-    /** The specific answer being targeted for a change. */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "target_answer_id")
-    private Answer targetAnswer;
+    @OneToMany(
+            mappedBy = "changeRequest",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @Builder.Default
+    private List<ProposedAnswer> proposedAnswers = new ArrayList<>();
 
-    /** The new, corrected text for the answer. */
-    @Column(length = 1000)
-    private String proposedText;
-
-    /** The proposed correctness for the answer. */
-    private Boolean proposedIsCorrect;
+    // --- HELPER METHOD ---
+    public void addProposedAnswer(ProposedAnswer answer) {
+        this.proposedAnswers.add(answer);
+        answer.setChangeRequest(this);
+    }
 }

@@ -4,6 +4,7 @@ import com.iubh.quizbackend.api.controller.WebSocketController;
 import com.iubh.quizbackend.entity.module.Module;
 import com.iubh.quizbackend.entity.user.User;
 import com.iubh.quizbackend.repository.ModuleRepository;
+import com.iubh.quizbackend.repository.QuizLobbyRepository;
 import com.iubh.quizbackend.repository.UserRepository;
 import com.iubh.quizbackend.service.ActiveUserStore;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class WebSocketEventListener {
     private final WebSocketController webSocketController;
     private final UserRepository userRepository;
     private final ModuleRepository moduleRepository;
+    private final QuizLobbyRepository lobbyRepository;
 
     @Transactional(readOnly = true)
     @EventListener
@@ -61,7 +63,7 @@ public class WebSocketEventListener {
         }
     }
 
-    @Transactional(readOnly = true)
+    @Transactional()
     @EventListener
 
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
@@ -73,6 +75,9 @@ public class WebSocketEventListener {
 
             // --- APPLY THE SAME FIX HERE for consistency and safety ---
             List<Module> followedModules = moduleRepository.findModulesFollowedByUserId(removedUserId);
+
+            lobbyRepository.cancelWaitingLobbiesByHostId(removedUserId);
+
             for (Module followedModule : followedModules) {
                 webSocketController.broadcastUpdate(followedModule.getId());
             }
