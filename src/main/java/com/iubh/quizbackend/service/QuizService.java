@@ -19,6 +19,7 @@ import com.iubh.quizbackend.repository.QuizRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,7 +52,7 @@ public class QuizService {
         Module module = moduleRepository.findById(moduleId)
                 .orElseThrow(() -> new EntityNotFoundException("Module not found with id: " + moduleId));
 
-        List<ChoiceQuestion> randomQuestions = choiceQuestionRepository.findRandomQuestionsByModule(moduleId, QUIZ_QUESTION_COUNT);
+        Page<ChoiceQuestion> randomQuestions = choiceQuestionRepository.pickRandomByModule(moduleId, PageRequest.of(0,QUIZ_QUESTION_COUNT ));
         if (randomQuestions.isEmpty()) {
             throw new IllegalStateException("Not enough questions in the module to start a quiz.");
         }

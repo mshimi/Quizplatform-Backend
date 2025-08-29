@@ -70,4 +70,25 @@ public interface ChoiceQuestionRepository extends JpaRepository<ChoiceQuestion, 
     Page<ChoiceQuestion> findByQuestionTextContainingIgnoreCaseAndActiveTrue(String searchText, Pageable pageable);
 
 
+    @Query(value = """
+  SELECT id 
+  FROM choice_questions 
+  WHERE module_id = :moduleId AND active = true 
+  ORDER BY RANDOM() 
+  LIMIT :limit
+""", nativeQuery = true)
+    List<UUID> findRandomQuestionIdsByModule(@Param("moduleId") UUID moduleId,
+                                             @Param("limit") int limit);
+
+
+    @Query("""
+       select q
+         from ChoiceQuestion q
+        where q.module.id = :moduleId
+          and q.active = true
+        order by function('RANDOM')
+       """)
+    Page<ChoiceQuestion> pickRandomByModule(UUID moduleId, Pageable pageable);
+
+
 }

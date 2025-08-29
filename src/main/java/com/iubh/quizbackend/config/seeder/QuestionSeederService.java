@@ -29,6 +29,8 @@ public class QuestionSeederService {
             ChoiceQuestion question = ChoiceQuestion.builder()
                     .questionText(template.questionText())
                     .module(randomModule)
+                    .active(true)
+
                     .build();
 
             for (AnswerTemplate answerTemplate : template.answers()) {

@@ -66,4 +66,21 @@ public class QuizLobbyController {
     public List<QuizLobbyDto> getLobbies() {
         return quizLobbyService.getWaitingLobbies();
     }
+
+
+    @DeleteMapping("/{lobbyId}/participants/me")
+    public ResponseEntity<Void> leaveLobbyDelete(
+            @PathVariable UUID lobbyId,
+            @AuthenticationPrincipal User currentUser) {
+
+        quizLobbyService.leaveLobby(currentUser, lobbyId);
+        return ResponseEntity.noContent().build();
+    }
+
+
+    @GetMapping("/{lobbyId}")
+    public ResponseEntity<QuizLobbyDto> getLobbyById(@PathVariable UUID lobbyId) {
+        QuizLobby lobby = quizLobbyService.getLobbyById(lobbyId);
+        return ResponseEntity.ok(quizLobbyMapper.toDto(lobby));
+    }
 }
