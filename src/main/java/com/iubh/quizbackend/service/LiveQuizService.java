@@ -55,8 +55,8 @@ public class LiveQuizService {
     private final Map<UUID, ScheduledFuture<?>> scheduledNext = new ConcurrentHashMap<>();
 
 
-   // private final @Lazy LiveQuizService self;
-   private final PlatformTransactionManager txManager; // <-- ADD
+    // private final @Lazy LiveQuizService self;
+    private final PlatformTransactionManager txManager; // <-- ADD
 
 
     private void runInTx(Runnable action) {
@@ -152,14 +152,16 @@ public class LiveQuizService {
 
         // Teilnehmer eintragen (Lambda darf savedSession verwenden, weil final)
         lobby.getParticipants().forEach(u -> {
-            LiveQuizParticipant p = LiveQuizParticipant.builder()
-                    .session(savedSession)
-                    .user(u)
-                    .score(0)
-                    .connected(true)
-                    .joinedAt(java.time.LocalDateTime.now())
-                    .build();
-            savedSession.addParticipant(p);
+            log.info(u.getId().toString());
+
+            LiveQuizParticipant lp = new LiveQuizParticipant();
+            lp.setSession(savedSession);
+            lp.setConnected(true);
+            lp.setUser(u);
+            lp.setJoinedAt(java.time.LocalDateTime.now());
+            lp.setScore(0);
+
+            savedSession.addParticipant(lp);
         });
         participantRepo.saveAll(savedSession.getParticipants());
 
@@ -172,11 +174,12 @@ public class LiveQuizService {
                 .bufferDurationSec(savedSession.getBufferDurationSec())
                 .build();
 
-       // messagingTemplate.convertAndSend("/topic/lobby/" + lobby.getId(), evt);
+        // messagingTemplate.convertAndSend("/topic/lobby/" + lobby.getId(), evt);
 
         org.springframework.transaction.support.TransactionSynchronizationManager
                 .registerSynchronization(new org.springframework.transaction.support.TransactionSynchronization() {
-                    @Override public void afterCommit() {
+                    @Override
+                    public void afterCommit() {
                         messagingTemplate.convertAndSend(topicForLobby(lobby.getId()), evt);
                     }
                 });
@@ -209,7 +212,10 @@ public class LiveQuizService {
 
     private void cancelFuture(ScheduledFuture<?> f) {
         if (f != null) {
-            try { f.cancel(false); } catch (Exception ignored) {}
+            try {
+                f.cancel(false);
+            } catch (Exception ignored) {
+            }
         }
     }
 

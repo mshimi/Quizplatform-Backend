@@ -12,31 +12,22 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    @Autowired
-    private AuthChannelInterceptor authChannelInterceptor;
-
-    @Override
-    public void configureMessageBroker(MessageBrokerRegistry config) {
-        // Topic prefixes that clients can subscribe to
-        config.enableSimpleBroker("/topic");
-        // Prefix for messages sent from client to server (e.g., /app/register)
-        config.setApplicationDestinationPrefixes("/app");
-
-        // should be routed to queues specific to a user.
-        config.setUserDestinationPrefix("/user");
-    }
-
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // The endpoint clients use to connect to the WebSocket server
         registry.addEndpoint("/ws-connect")
-                .setAllowedOriginPatterns("http://localhost:3000", "http://localhost:5173") // From your CorsConfig
-                .withSockJS();
+                // use patterns, works with credentials and multiple hosts
+                .setAllowedOriginPatterns(
+                        "http://localhost:*"
+                      //  "https://your-prod-domain.com",
+                      //  "http://your-prod-domain.com"
+                )
+                .withSockJS(); // SockJS creates /ws-connect/** subpaths like /info, /websocket, etc.
     }
 
     @Override
-    public void configureClientInboundChannel(ChannelRegistration registration) {
-        // Register our custom interceptor to validate JWT on connect
-        registration.interceptors(authChannelInterceptor);
+    public void configureMessageBroker(MessageBrokerRegistry registry) {
+        registry.enableSimpleBroker("/topic", "/queue");
+        registry.setApplicationDestinationPrefixes("/app");
+        registry.setUserDestinationPrefix("/user");
     }
 }

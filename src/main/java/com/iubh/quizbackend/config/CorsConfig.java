@@ -19,6 +19,11 @@ public class CorsConfig {
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Allowed HTTP methods
                         .allowedHeaders("*") // Allow all headers
                         .allowCredentials(true); // Allow cookies and credentials
+
+                registry.addMapping("/ws-connect/**")
+                        .allowedOrigins("http://localhost:5173", "https://your-prod-domain.com")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowCredentials(true); // Allow cookies and credentials;
             }
         };
     }

@@ -5,6 +5,7 @@ import com.iubh.quizbackend.api.dto.live.SessionStateDto;
 import com.iubh.quizbackend.api.dto.live.StartLiveSessionResponseDto;
 import com.iubh.quizbackend.api.dto.live.SubmitLiveAnswerDto;
 import com.iubh.quizbackend.entity.quiz.LiveQuizSession;
+import com.iubh.quizbackend.entity.quiz.SessionStatus;
 import com.iubh.quizbackend.entity.user.User;
 import com.iubh.quizbackend.service.LiveQuizService;
 import jakarta.validation.Valid;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -74,24 +76,26 @@ public class LiveQuizController {
     ) {
         Map<String, Object> raw = liveQuizService.getSessionState(sessionId, currentUser);
 
-        // --- Map -> DTO Mapping (leichtgewichtig, ohne separate Mapperklasse) ---
-        var status = com.iubh.quizbackend.entity.quiz.SessionStatus.valueOf((String) raw.get("status"));
-        int currentIndex = (int) raw.get("currentIndex");
-        int totalQuestions = (int) raw.get("totalQuestions");
+        var status = SessionStatus.valueOf((String) raw.get("status"));
+
+        int currentIndex = Optional.ofNullable((Number) raw.get("currentIndex"))
+                .map(Number::intValue).orElse(-1);
+        int totalQuestions = Optional.ofNullable((Number) raw.get("totalQuestions"))
+                .map(Number::intValue).orElse(0);
+
         Instant startAt = (Instant) raw.get("startAt");
-        Instant endsAt = (Instant) raw.get("endsAt");
+        Instant endsAt  = (Instant) raw.get("endsAt");
 
         SessionStateDto.QuestionDto qDto = null;
         @SuppressWarnings("unchecked")
         Map<String, Object> qMap = (Map<String, Object>) raw.get("question");
         if (qMap != null) {
             @SuppressWarnings("unchecked")
-            List<Map<String, Object>> ans = (List<Map<String, Object>>) qMap.get("answers");
+            List<Map<String, Object>> ans = (List<Map<String, Object>>) qMap.getOrDefault("answers", List.of());
             var answers = ans.stream()
                     .map(a -> new SessionStateDto.AnswerDto(
                             (UUID) a.get("id"),
-                            (String) a.get("text")
-                    ))
+                            (String) a.get("text")))
                     .toList();
 
             qDto = new SessionStateDto.QuestionDto(
@@ -100,6 +104,7 @@ public class LiveQuizController {
                     answers
             );
         }
+
 
         @SuppressWarnings("unchecked")
         Map<String, Object> youMap = (Map<String, Object>) raw.get("you");

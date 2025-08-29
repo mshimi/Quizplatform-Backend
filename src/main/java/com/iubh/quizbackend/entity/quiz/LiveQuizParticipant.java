@@ -9,9 +9,8 @@ import java.util.*;
 
 @Getter
 @Setter
-@Builder
+
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(
         name = "live_quiz_participants",
@@ -43,12 +42,10 @@ public class LiveQuizParticipant {
     private User user;
 
     /** Summierte Punkte (1/0) – für schnelles Leaderboard. */
-    @Builder.Default
     @Column(name = "score", nullable = false)
     private int score = 0;
 
     /** Nützlich für Abbruch/Grace-Logik. */
-    @Builder.Default
     @Column(name = "connected", nullable = false)
     private boolean connected = true;
 
@@ -63,12 +60,41 @@ public class LiveQuizParticipant {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    @Builder.Default
     private Set<ParticipantAnswer> answers = new HashSet<>();
 
     // --- Helper ---
     public void addAnswer(ParticipantAnswer a) {
         a.setParticipant(this);
         this.answers.add(a);
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof LiveQuizParticipant that)) return false;
+
+        // If both have database IDs, compare those
+        if (this.id != null && that.id != null) {
+            return this.id.equals(that.id);
+        }
+
+        // Otherwise compare natural key (sessionId + userId)
+        UUID thisSessionId = this.session != null ? this.session.getId() : null;
+        UUID thatSessionId = that.session != null ? that.session.getId() : null;
+        UUID thisUserId = this.user != null ? this.user.getId() : null;
+        UUID thatUserId = that.user != null ? that.user.getId() : null;
+
+        return Objects.equals(thisSessionId, thatSessionId)
+               && Objects.equals(thisUserId, thatUserId);
+    }
+
+    @Override
+    public int hashCode() {
+        // If we have an id, use it; else use natural key
+        if (id != null) return id.hashCode();
+        UUID sessionId = session != null ? session.getId() : null;
+        UUID userId = user != null ? user.getId() : null;
+        return Objects.hash(sessionId, userId);
     }
 }
