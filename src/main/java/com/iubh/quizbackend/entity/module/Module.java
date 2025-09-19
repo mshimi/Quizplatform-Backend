@@ -47,12 +47,11 @@ public class Module {
     @JsonIgnore // Ignore during serialization to prevent fetching a potentially large list
     private Set<ChoiceQuestion> questions = new HashSet<>();
 
-    @Formula("(select count(q.id) from choice_questions q where q.module_id = id)")
+    @Formula("(select count(q.id) from choice_questions q where q.module_id = id and q.active = true)")
     private int numberOfChoiceQuestions;
 
 
 
-    // ADD THIS: A highly efficient, read-only property for the like count.
     @Formula("(select count(ufm.user_id) from user_followed_modules ufm where ufm.module_id = id)")
     private int likeCount;
 

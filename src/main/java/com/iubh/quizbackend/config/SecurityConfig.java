@@ -78,7 +78,6 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(a -> a
                         .requestMatchers("/api/v1/auth/authenticate", "/api/v1/auth/register", "/api/v1/auth/refresh-token").permitAll()
-                        .requestMatchers("/ws-connect/**").permitAll()   // <— handshake + SockJS subpaths
                         .anyRequest().authenticated()
                 )
                 .formLogin(AbstractHttpConfigurer::disable)

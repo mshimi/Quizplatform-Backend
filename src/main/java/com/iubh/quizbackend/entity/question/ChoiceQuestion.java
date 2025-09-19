@@ -90,7 +90,7 @@ public class ChoiceQuestion {
         return correctAnswersCount > 1 ? ChoiceQuestionType.MULTI : ChoiceQuestionType.SINGLE;
     }
 
-    @Formula("(select count(qcr.id) from question_change_requests qcr where qcr.question_id = id)")
+    @Formula("(select count(qcr.id) from question_change_requests qcr where qcr.question_id = id )")
     private int totalChangeRequests;
 
     @Formula("(select count(qcr.id) from question_change_requests qcr where qcr.question_id = id and qcr.request_type = 'INCORRECT_QUESTION_TEXT')")

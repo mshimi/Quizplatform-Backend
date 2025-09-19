@@ -45,6 +45,7 @@ public class QuestionService {
         // 2. Create the new question entity from the DTO.
         ChoiceQuestion newQuestion = ChoiceQuestion.builder()
                 .questionText(requestDto.getQuestionText())
+                .active(true)
                 .module(module)
                 .build();
 

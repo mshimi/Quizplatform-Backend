@@ -99,7 +99,7 @@ public class LiveQuizService {
         lobby.setStatus(QuizLobbyStatus.IN_PROGRESS);
         lobbyRepo.save(lobby);
 
-        final int QUESTION_COUNT = 2;  // TODO: Change to 10 or handle in HTTP Request
+        final int QUESTION_COUNT = 10;  // TODO: Change to 10 or handle in HTTP Request
         Module module = lobby.getModule();
 
         List<ChoiceQuestion> picked =
@@ -108,7 +108,7 @@ public class LiveQuizService {
                         .getContent();
 
 
-        if (picked.size() < QUESTION_COUNT) {
+        if (picked.isEmpty()) {
             throw new IllegalStateException("Not enough questions in module.");
         }
 

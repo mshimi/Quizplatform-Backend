@@ -5,11 +5,13 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import lombok.Data;
 import java.util.List;
 
 // This represents the entire form payload
 @Data
+@Builder
 public class CreateQuestionRequestDto {
 
     @NotBlank(message = "Der Fragentext darf nicht leer sein.")

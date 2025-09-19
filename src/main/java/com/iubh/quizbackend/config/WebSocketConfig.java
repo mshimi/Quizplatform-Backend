@@ -15,13 +15,15 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws-connect")
-                // use patterns, works with credentials and multiple hosts
                 .setAllowedOriginPatterns(
-                        "http://localhost:*"
-                      //  "https://your-prod-domain.com",
-                      //  "http://your-prod-domain.com"
+                        "http://localhost:*",
+                        "http://ec2-13-51-207-0.eu-north-1.compute.amazonaws.com:*",
+                        "https://ec2-13-51-207-0.eu-north-1.compute.amazonaws.com:*",
+                        "https://your-prod-domain.com",
+                        "http://your-prod-domain.com"
+                        // or simply "*"
                 )
-                .withSockJS(); // SockJS creates /ws-connect/** subpaths like /info, /websocket, etc.
+                .withSockJS();
     }
 
     @Override

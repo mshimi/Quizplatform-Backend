@@ -15,13 +15,24 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(@NonNull CorsRegistry registry) {
                 registry.addMapping("/api/**") // Apply CORS to all endpoints under /api
-                        .allowedOrigins("http://localhost:3000","http://localhost:5173") // Allow requests from your React app
+                        .allowedOrigins(
+                                "http://localhost:3000",
+                                "http://localhost:5173",
+                                "http://ec2-13-51-207-0.eu-north-1.compute.amazonaws.com:8081",
+                                "https://ec2-13-51-207-0.eu-north-1.compute.amazonaws.com"
+
+                        )
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Allowed HTTP methods
                         .allowedHeaders("*") // Allow all headers
                         .allowCredentials(true); // Allow cookies and credentials
 
                 registry.addMapping("/ws-connect/**")
-                        .allowedOrigins("http://localhost:5173", "https://your-prod-domain.com")
+                        .allowedOrigins(
+                                "http://localhost:5173",
+                                "http://ec2-13-51-207-0.eu-north-1.compute.amazonaws.com:8081",
+                                "https://ec2-13-51-207-0.eu-north-1.compute.amazonaws.com"
+
+                        )
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowCredentials(true); // Allow cookies and credentials;
             }

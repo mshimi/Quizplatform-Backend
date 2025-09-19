@@ -35,13 +35,16 @@ public class ProdDatabaseSeeder implements CommandLineRunner {
         // 1. Check if the database already has modules to prevent duplicates
         if (moduleRepository.count() > 0) {
 
-//            List<ChoiceQuestion> questions =   choiceQuestionRepository.findAll();
-//
-//            questions.forEach(question -> {
-//                question.setActive(true);
-//            });
-//
-//            choiceQuestionRepository.saveAll(questions);
+            List<ChoiceQuestion> questions =   choiceQuestionRepository.findAll();
+
+            questions.forEach(question -> {
+               if(question.getActive() == null)
+               {
+                   question.setActive(true);
+               }
+            });
+
+            choiceQuestionRepository.saveAll(questions);
 
             log.info("Production database already contains modules. Skipping data seeding.");
             return;
